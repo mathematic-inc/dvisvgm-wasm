@@ -35,43 +35,6 @@ CPPFLAGS_SAVE="$CPPFLAGS"
 CFLAGS_SAVE="$CFLAGS"
 LDFLAGS_SAVE="$LDFLAGS"
 
-# Check availability and usability of the kpathsea library
-AC_ARG_VAR(KPSE_CFLAGS, [C/C++ compiler flags for the kpathsea library])
-AC_ARG_VAR(KPSE_LIBS, [linker flags for the kpathsea library])
-AC_ARG_VAR(KPSE_LIBS, [])
-AC_ARG_WITH([kpathsea],
-	[AS_HELP_STRING([--with-kpathsea=prefix], [set location of kpathsea library])],
-	[with_kpathsea="$withval"],
-	[with_kpathsea=yes])
-
-AS_IF([test "x$with_kpathsea" != "xyes"],
-	[KPSE_CFLAGS="-I$with_kpathsea/include" KPSE_LIBS="-L$with_kpathsea/lib"]
-	[CPPFLAGS="$CPPFLAGS $KPSE_CFLAGS" CFLAGS="$CFLAGS $KPSE_CFLAGS" LDFLAGS="$LDFLAGS $KPSE_LIBS"])
-
-AC_CHECK_HEADER([kpathsea/kpathsea.h],,
-	[AC_MSG_ERROR([please install the kpathsea development package])])
-AC_CHECK_LIB([kpathsea], [kpse_find_file],,
-	[AC_MSG_ERROR([libkpathsea not found, please install the corresponding package first])])
-
-AC_MSG_CHECKING([kpathsea version])
-AC_RUN_IFELSE([AC_LANG_SOURCE([#include <stdio.h>
-	#include <kpathsea/kpathsea.h>
-	int main() {
-		FILE *f;
-		f = fopen("kpseversion", "w");
-		if(!f) exit(1);
-		fprintf(f, "%s\n", KPSEVERSION);
-		fclose(f);
-		exit(0);
-	}])],
-	[kpseversion=`cat kpseversion|sed 's/kpathsea version //'`], [kpseversion=], [kpseversion=unknown])
-AC_MSG_RESULT("$kpseversion")
-rm -f kpseversion
-AS_IF([test -z "$kpseversion"],
-	[AC_MSG_ERROR([Could not compile a simple kpathsea program -- check your installation])])
-AC_SUBST(KPSE_CFLAGS)
-AC_SUBST(KPSE_LIBS)
-
 # Check how to link Ghostscript
 have_libgs=yes
 AC_CHECK_HEADER([ghostscript/iapi.h],
@@ -172,17 +135,6 @@ AC_ARG_WITH(zlib,
 
 AC_SUBST([ZLIB_CFLAGS])
 AC_SUBST([ZLIB_LIBS])
-
-# Check if the kpathsea headers are C++ safe
-AC_MSG_CHECKING([if the kpathsea headers are C++ safe])
-AC_LANG_PUSH([C++])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <kpathsea/kpathsea.h>]],
-                                [[printf("%s\n", concat("one", "two"))]])],
-               [AC_MSG_RESULT([yes])],
-               [AC_MSG_RESULT([no])
-                AC_DEFINE([KPSE_CXX_UNSAFE], 1,
-                          [Define to 1 if the kpathsea headers are not C++ safe.])])
-AC_LANG_POP([C++])
 
 CPPFLAGS="$CPPFLAGS_SAVE"
 CFLAGS="$CFLAGS_SAVE"

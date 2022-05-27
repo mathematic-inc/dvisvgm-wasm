@@ -52,6 +52,8 @@ libdvisvgm_la_SOURCES = \
 	CMapManager.hpp              CMapManager.cpp \
 	CMapReader.hpp               CMapReader.cpp \
 	CLOption.hpp \
+	xmemory.h xmemory.c \
+	w2c/config.h \
 	Color.hpp                    Color.cpp \
 	ColorSpecialHandler.hpp      ColorSpecialHandler.cpp \
 	CommandLine.hpp \
@@ -68,6 +70,7 @@ libdvisvgm_la_SOURCES = \
 	EPSFile.hpp                  EPSFile.cpp \
 	EPSToSVG.hpp \
 	FileFinder.hpp               FileFinder.cpp \
+	kpseemu.h               	 kpseemu.c \
 	FilePath.hpp                 FilePath.cpp \
 	FileSystem.hpp               FileSystem.cpp \
 	FixWord.hpp \

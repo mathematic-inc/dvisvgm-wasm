@@ -28,3 +28,16 @@ lcov-clean:
 
 coverage: lcov-clean check lcov-report
 endif
+
+dist: dist/dvisvgm.js dist/dvisvgm.wasm
+
+dist/dvisvgm.js: src/dvisvgm
+	cp src/dvisvgm dist/dvisvgm.js
+
+dist/dvisvgm.wasm: src/dvisvgm
+	cp src/dvisvgm.wasm dist/dvisvgm.wasm
+
+src/dvisvgm:
+	emmake make LDFLAGS="-lidbfs.js --pre-js pre.js -s ASYNCIFY -s ASYNCIFY_STACK_SIZE=30000 -s MODULARIZE -s ALLOW_MEMORY_GROWTH=1 -s EXIT_RUNTIME=1 -s INITIAL_MEMORY=36MB"
+
+.PHONY: dist

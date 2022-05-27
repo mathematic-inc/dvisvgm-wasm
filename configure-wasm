@@ -1,0 +1,12 @@
+#! /bin/sh
+cd third_party
+make all
+cd ..
+
+emconfigure \
+    ./configure \
+    --enable-bundled-libs \
+    --prefix=/usr/emsdk/upstream/emscripten/cache/sysroot \
+    PKG_CONFIG_PATH=/usr/emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig \
+    LIBS=-lembind \
+    CXXFLAGS="-sNO_DISABLE_EXCEPTION_CATCHING -DWEBASSEMBLY_BUILD"

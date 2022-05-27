@@ -400,24 +400,6 @@ void DVIToSVG::setProcessSpecials (const char *ignorelist, bool pswarning) {
 		handlers.emplace_back(util::make_unique<PapersizeSpecialHandler>()); // handles papersize special
 		handlers.emplace_back(util::make_unique<PdfSpecialHandler>());       // handles pdf specials
 		handlers.emplace_back(util::make_unique<TpicSpecialHandler>());      // handles tpic specials
-#ifndef DISABLE_GS
-		if (Ghostscript().available())
-			handlers.emplace_back(util::make_unique<PsSpecialHandler>());     // handles PostScript specials
-		else
-#endif
-		{
-#ifndef HAVE_LIBGS
-			// dummy PS special handler that only prints warning messages
-			handlers.emplace_back(util::make_unique<NoPsSpecialHandler>());
-			if (pswarning) {
-#ifdef DISABLE_GS
-				Message::wstream() << "processing of PostScript specials has been disabled permanently\n";
-#else
-				Message::wstream() << "processing of PostScript specials is disabled (Ghostscript not found)\n";
-#endif
-			}
-#endif
-		}
 		SpecialManager::instance().unregisterHandlers();
 		SpecialManager::instance().registerHandlers(handlers, ignorelist);
 	}

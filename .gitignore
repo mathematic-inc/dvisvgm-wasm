@@ -82,3 +82,7 @@ nbproject
 stamp-h1
 a.out
 test*.*
+data
+*.wasm
+*.data
+third_party/kpathsea

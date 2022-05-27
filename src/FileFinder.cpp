@@ -26,7 +26,11 @@
 	#ifdef KPSE_CXX_UNSAFE
 	extern "C" {
 	#endif
+	#ifndef WEBASSEMBLY_BUILD
 		#include <kpathsea/kpathsea.h>
+	#else
+		#include "w2c/config.h"
+	#endif
 	#ifdef KPSE_CXX_UNSAFE
 	}
 	#endif
@@ -59,11 +63,13 @@ FileFinder::FileFinder () {
 #ifdef MIKTEX
 	_miktex = util::make_unique<MiKTeXCom>();
 #else
+	#ifndef WEBASSEMBLY_BUILD
 	kpse_set_program_name(_argv0.c_str(), _progname.c_str());
 	// enable tfm and mf generation (actually invoked by calls of kpse_make_tex)
 	kpse_set_program_enabled(kpse_tfm_format, 1, kpse_src_env);
 	kpse_set_program_enabled(kpse_mf_format, 1, kpse_src_env);
 	kpse_make_tex_discard_errors = true;  // suppress messages from mktexFOO tools
+	#endif
 #endif
 }
 
@@ -214,6 +220,7 @@ const char* FileFinder::findMappedFile (std::string fname) const {
  *  @param[in] fname name of file to build
  *  @return file path on success, 0 otherwise */
 const char* FileFinder::mktex (const std::string &fname) const {
+	#ifndef WEBASSEMBLY_BUILD
 	size_t pos = fname.rfind('.');
 	if (!_enableMktex || pos == std::string::npos)
 		return nullptr;
@@ -232,7 +239,8 @@ const char* FileFinder::mktex (const std::string &fname) const {
 	kpse_file_format_type type = (ext == "tfm" ? kpse_tfm_format : kpse_mf_format);
 	path = kpse_make_tex(type, fname.c_str());
 #endif
-	return path;
+	#endif
+	return nullptr;
 }
 
 
@@ -260,6 +268,7 @@ const char* FileFinder::lookup (const std::string &fname, const char *ftype, boo
  *  @param[in] addSuffix if true, ".exe" is appended to the given filename (Windows only)
  *  @return absolute path of file or nullptr if not found */
 const char* FileFinder::lookupExecutable (const std::string &fname, bool addSuffix) const {
+#ifndef WEBASSEMBLY_BUILD
 #ifdef MIKTEX
 	_pathbuf = _miktex->getBinDir() + "/" + fname;
 	if (addSuffix)
@@ -283,5 +292,6 @@ const char* FileFinder::lookupExecutable (const std::string &fname, bool addSuff
 			return _pathbuf.c_str();
 	}
 #endif  // !MIKTEX
+#endif
 	return nullptr;
 }
